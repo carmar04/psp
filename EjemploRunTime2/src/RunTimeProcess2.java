@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class RunTimeProcess2 {
@@ -12,7 +13,9 @@ public class RunTimeProcess2 {
 		
 		Runtime runtime = Runtime.getRuntime();
 			try {
-				Process process = runtime.exec(args, null, new File());
+				Process process = runtime.exec(args, null,
+						new File("/home/carmar04/psp/EjemploRunTime/bin"));
+				
 				String respuesta = teclado.nextLine();
 				if(respuesta.length()>0 || respuesta.equalsIgnoreCase("")) {
 					process.destroy();

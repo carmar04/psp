@@ -30,7 +30,7 @@ public class EjemploStream4 {
 		//captura la salida estandar del programa
 		System.out.println("Salida estandar del proceso " + Arrays.toString(args) + " :");
 		while ((line = br1.readLine()) != null) {
-			System.out.println("Salida estandar ->" + line);
+			System.out.println("Salida estandar -> " + line);
 		}
 		
 		//captura la salida de error del programa

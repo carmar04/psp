@@ -9,7 +9,6 @@ public class LanzaHilos {
 		hilo2.start();
 		try {
 			Thread.currentThread().sleep(5000);
-			Thread.currentThread().destroy();
 		} catch (InterruptedException e) {
 			System.out.println(Thread.currentThread().getName() + " interrumpido. ");
 			return;

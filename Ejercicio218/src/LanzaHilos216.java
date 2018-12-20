@@ -17,6 +17,7 @@ public class LanzaHilos216 {
 		try {
 			hiloSumador.join();
 			hiloRestador.join();
+			hiloSumador2.join();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

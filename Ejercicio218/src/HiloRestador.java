@@ -11,7 +11,6 @@ public class HiloRestador extends Thread {
 		this.contador = contador;
 		this.numero = numero;
 		this.sem = sem;
-		
 	}
 	public void run() {
 		System.out.println("Hilo en ejecución: " + this.getName());

@@ -1,6 +1,6 @@
 import java.util.concurrent.Semaphore;
 
-public class LanzaHilos216 {
+public class LanzaHilos218 {
 
 	public static void main(String[] args) {
 		Contador contador = new Contador(100);

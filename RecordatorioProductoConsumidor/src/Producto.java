@@ -15,8 +15,8 @@ public class Producto {
 					//wait();
 					wait(1000);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
+					return;
 				}
 				break;
 			}
@@ -27,8 +27,8 @@ public class Producto {
 			try {
 				wait();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				return;
 			}
 		}
 		System.out.println("HiloConsumir ----> " + consumir);

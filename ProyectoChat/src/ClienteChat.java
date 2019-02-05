@@ -7,6 +7,7 @@ import java.net.Socket;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -68,8 +69,23 @@ public class ClienteChat extends JFrame implements ActionListener, Runnable{
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		
+		String texto = "";
+		while(repetir) {
+			try {
+				texto = fentrada.readUTF();
+				textarea1.setText(texto);
+			}catch(IOException e) {
+				JOptionPane.showMessageDialog(null, "IMPOSIBLE CONECTAR CON EL SERVIDOR\n" +
+						e.getMessage(), "<<MENSAJSE DE ERROR: 2>>", JOptionPane.ERROR_MESSAGE);
+				repetir = false;
+			}
+		}
+		try {
+			socket.close();
+			System.exit(0);
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -79,8 +95,22 @@ public class ClienteChat extends JFrame implements ActionListener, Runnable{
 				return;
 			}
 			String texto = nombre + "> " + mensaje.getText();
+			try {
+				mensaje.setText("");
+				fsalida.writeUTF(texto);
+			}catch(IOException e1) {
+				e1.printStackTrace();
+			}
 		}
-		
+		if(e.getSource() == botonSalir) {
+			String texto = " > Abondona el chat..." + nombre;
+			try {
+				fsalida.writeUTF(texto);
+				fsalida.writeUTF("*");
+				repetir = false;
+			}catch(IOException e1) {
+				e1.printStackTrace();
+			}
+		}
 	}
-	
 }

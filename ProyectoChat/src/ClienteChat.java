@@ -113,4 +113,28 @@ public class ClienteChat extends JFrame implements ActionListener, Runnable{
 			}
 		}
 	}
+	public static void main(String[] args) {
+        int puerto = 44444;
+        Socket s = null;
+        
+        String nombre = JOptionPane.showInputDialog
+                ("Introduce tu nombre o nick:");
+        
+        if (nombre.trim().length() == 0) {
+            System.out.println("El nombre esta vacio...");
+            return;
+        }
+        try {
+            s = new Socket("localhost", puerto);
+            ClienteChat cliente = new ClienteChat(s,nombre);
+            cliente.setBounds(0, 0, 540, 400);
+            cliente.setVisible(true);
+            new Thread(cliente).start();//lanzar hilo cliente
+        }catch(IOException e) {
+            JOptionPane.showMessageDialog(null,"IMPOSIBLE CONECTAR CON EL SERVIDOR\n"+
+                                                e.getMessage(),"<<MENSAJE DE ERROR:1>>",
+                                                JOptionPane.ERROR_MESSAGE);
+        
+        }
+    }//main
 }

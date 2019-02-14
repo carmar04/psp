@@ -1,3 +1,4 @@
+
 import java.io.*;
 import java.net.*;
 public class HiloServidorChat extends Thread{
@@ -5,6 +6,7 @@ public class HiloServidorChat extends Thread{
 	DataInputStream fentrada;
 	Socket socket = null;
 	ComunHilos comun;
+	
 	
 	public HiloServidorChat(Socket s, ComunHilos comun) {
 		this.socket = s;
@@ -26,13 +28,21 @@ public class HiloServidorChat extends Thread{
 		while(true) {
 			String cadena = "";
 			try {
-				cadena = fentrada.readUTF();
-				if(cadena.trim().equals("*")) {//CLIENTE DESCONECTA
+				cadena=fentrada.readUTF();
+				
+				if(cadena.trim().contains("192.168.26")) {//CLIENTE DESCONECTA
+					for(int i = 0; i<comun.IP.size(); i++) {
+						if(cadena.equalsIgnoreCase(comun.IP.get(i))) {
+							comun.IP.remove(i);
+						}
+					}
+					System.out.println("Carles eres un becario");
 					comun.setACTUALES(comun.getACTUALES()-1);
 					System.out.println("NÚMERO DE CONEXIONES ACTUALES: "+comun.getACTUALES());
 					break; //sale del bucle
 					
 				}
+				
 				comun.setMensajes(comun.getMensajes()+cadena+ "\n");
 				EnviarMensajeaTodos(comun.getMensajes());
 			}catch(IOException e){

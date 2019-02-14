@@ -8,6 +8,8 @@ import javax.swing.*;
 public class ClienteChat extends JFrame implements ActionListener, Runnable {
 	private static final long serialVersionUID = 1L;
 	Socket socket = null;
+	static Socket s = null;
+	static String IP = "/192.168.26.111";
 	
 	// streams
 	DataInputStream fentrada; //PARA LEER LOS MENSAJES
@@ -70,6 +72,7 @@ public class ClienteChat extends JFrame implements ActionListener, Runnable {
 			try {
 				mensaje.setText("");
 				fsalida.writeUTF(texto);
+				
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -79,7 +82,12 @@ public class ClienteChat extends JFrame implements ActionListener, Runnable {
 			
 			try {
 				fsalida.writeUTF(texto);
-				fsalida.writeUTF("*");
+				String ip =socket.getRemoteSocketAddress().toString();
+				String[] parts = ip.split(":");
+				String part1 = parts[0]; 
+				fsalida.writeUTF("/"+IP);
+				//fsalida.writeUTF(nombre);
+				
 				repetir = false; //para salir del bucle
 			} catch (IOException e1) {
 				e1.printStackTrace();
@@ -113,7 +121,6 @@ public class ClienteChat extends JFrame implements ActionListener, Runnable {
 	
 	public static void main(String args[]) {
 		int puerto = 44444;
-		Socket s = null;
 		
 		String nombre = JOptionPane.showInputDialog("Introduce tu nombre o nick: ");
 		if (nombre.trim().length() == 0) {

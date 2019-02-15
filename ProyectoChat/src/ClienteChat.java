@@ -10,6 +10,7 @@ public class ClienteChat extends JFrame implements ActionListener, Runnable {
 	Socket socket = null;
 	static Socket s = null;
 	static String IP = "/192.168.26.111";
+	static int puerto = 0;
 	
 	// streams
 	DataInputStream fentrada; //PARA LEER LOS MENSAJES
@@ -51,7 +52,7 @@ public class ClienteChat extends JFrame implements ActionListener, Runnable {
 		try {
 			fentrada = new DataInputStream(socket.getInputStream());
 			fsalida = new DataOutputStream(socket.getOutputStream());
-			String texto = " > Entra en el Chat ... " + nombre;
+			String texto = " > Entra en el Chat-" + nombre;
 			fsalida.writeUTF(texto);
 		} catch (IOException e) {
 			System.out.println("ERROR DE E/S");
@@ -85,7 +86,7 @@ public class ClienteChat extends JFrame implements ActionListener, Runnable {
 				String ip =socket.getRemoteSocketAddress().toString();
 				String[] parts = ip.split(":");
 				String part1 = parts[0]; 
-				fsalida.writeUTF("/"+IP);
+				fsalida.writeUTF(IP);
 				//fsalida.writeUTF(nombre);
 				
 				repetir = false; //para salir del bucle
@@ -120,12 +121,32 @@ public class ClienteChat extends JFrame implements ActionListener, Runnable {
 	}// fin run
 	
 	public static void main(String args[]) {
-		int puerto = 44444;
 		
-		String nombre = JOptionPane.showInputDialog("Introduce tu nombre o nick: ");
-		if (nombre.trim().length() == 0) {
-			System.out.println("El nombre está vacío...");
-			return;
+		int seleccion = JOptionPane.showOptionDialog(
+				   null,
+				   "Seleccione como desea conectarse", 
+				   "Selector de opciones",
+				   JOptionPane.YES_NO_CANCEL_OPTION,
+				   JOptionPane.QUESTION_MESSAGE,
+				   null,    // null para icono por defecto.
+				   new Object[] {"user", "admin"},   // null para YES, NO y CANCEL
+				   "user");
+		
+		
+		int puertoUsuario = 44444;
+		String nombre = "";
+		
+		if(seleccion == 0) {
+			puerto = puertoUsuario;
+			
+			nombre = JOptionPane.showInputDialog("Introduce tu nombre o nick: ");
+			if (nombre.trim().length() == 0) {
+				System.out.println("El nombre está vacío...");
+				return;
+			}
+		}else {
+			nombre = "admin";
+			puerto = puertoUsuario;
 		}
 		
 		try {

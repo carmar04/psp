@@ -9,39 +9,39 @@ public class ClienteChat extends JFrame implements ActionListener, Runnable {
 	private static final long serialVersionUID = 1L;
 	Socket socket = null;
 	static Socket s = null;
-	static String IP = "/192.168.26.111";
+	static String IP = "/192.168.26.111";// IP nuestra, es forma cutre pero no podemos conseguir la IP de otra manera
 	static int puerto = 0;
-	
+
 	// streams
-	DataInputStream fentrada; //PARA LEER LOS MENSAJES
-	DataOutputStream fsalida; //PARA ESCRIBIR MENSAJES
-	
+	DataInputStream fentrada; // PARA LEER LOS MENSAJES
+	DataOutputStream fsalida; // PARA ESCRIBIR MENSAJES
+
 	String nombre;
 	static JTextField mensaje = new JTextField();
-	
+
 	private JScrollPane scrollpane1;
 	static JTextArea textarea1;
 	JButton botonEnviar = new JButton("Enviar");
 	JButton botonSalir = new JButton("Salir");
 	boolean repetir = true;
-	
+
 	// constructor
 	public ClienteChat(Socket s, String nombre) {
 		super(" CONEXIÓN DEL CLIENTE CHAT: " + nombre);
 		setLayout(null);
 		mensaje.setBounds(10, 10, 400, 30);
 		add(mensaje);
-		
+
 		textarea1 = new JTextArea();
 		scrollpane1 = new JScrollPane(textarea1);
 		scrollpane1.setBounds(10, 50, 400, 300);
 		add(scrollpane1);
-		
+
 		botonEnviar.setBounds(420, 10, 100, 30);
 		add(botonEnviar);
 		botonSalir.setBounds(420, 50, 100, 30);
 		add(botonSalir);
-		
+
 		textarea1.setEditable(false);
 		botonEnviar.addActionListener(this);
 		botonSalir.addActionListener(this);
@@ -60,58 +60,54 @@ public class ClienteChat extends JFrame implements ActionListener, Runnable {
 			System.exit(0);
 		}
 	}// fin constructor
-	
+
 	// acción cuando pulsamos botones
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		
+
 		if (e.getSource() == botonEnviar) { // SE PULSA ENVIAR
 			if (mensaje.getText().trim().length() == 0)
 				return;
 			String texto = nombre + "> " + mensaje.getText();
-			
+
 			try {
 				mensaje.setText("");
 				fsalida.writeUTF(texto);
-				
+
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
 		}
 		if (e.getSource() == botonSalir) { // SE PULSA BOTON SALIR
 			String texto = " > Abandona el Chat ... " + nombre;
-			
+
 			try {
 				fsalida.writeUTF(texto);
-				String ip =socket.getRemoteSocketAddress().toString();
-				String[] parts = ip.split(":");
-				String part1 = parts[0]; 
-				fsalida.writeUTF(IP);
-				//fsalida.writeUTF(nombre);
-				
-				repetir = false; //para salir del bucle
+
+				fsalida.writeUTF(IP);// escribe la IP del ordenador
+
+				repetir = false; // para salir del bucle
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
 		}
 	} // FIN acción de los botones
-	
 
 	@Override
 	public void run() {
 		String texto = "";
 		while (repetir) {
 			try {
-				texto = fentrada.readUTF(); //leer mensajes
-				textarea1.setText(texto); //visualizarlos
+				texto = fentrada.readUTF(); // leer mensajes
+				textarea1.setText(texto); // visualizarlos
 			} catch (IOException e) {
 				// este error sale cuando el servidor se cierra
-				JOptionPane.showMessageDialog(null, "IMPOSIBLE CONECTAR CON EL SERVIDOR\n" +
-				e.getMessage(), "<<MENSAJE DE ERROR:2>>", JOptionPane.ERROR_MESSAGE);
-				repetir = false; //salir del bucle
+				JOptionPane.showMessageDialog(null, "IMPOSIBLE CONECTAR CON EL SERVIDOR\n" + e.getMessage(),
+						"<<MENSAJE DE ERROR:2>>", JOptionPane.ERROR_MESSAGE);
+				repetir = false; // salir del bucle
 			}
 		} // fin while
-		
+
 		try {
 			socket.close(); // cerrar socket
 			System.exit(0);
@@ -119,48 +115,40 @@ public class ClienteChat extends JFrame implements ActionListener, Runnable {
 			e.printStackTrace();
 		}
 	}// fin run
-	
+
 	public static void main(String args[]) {
-		
-		int seleccion = JOptionPane.showOptionDialog(
-				   null,
-				   "Seleccione como desea conectarse", 
-				   "Selector de opciones",
-				   JOptionPane.YES_NO_CANCEL_OPTION,
-				   JOptionPane.QUESTION_MESSAGE,
-				   null,    // null para icono por defecto.
-				   new Object[] {"user", "admin"},   // null para YES, NO y CANCEL
-				   "user");
-		
-		
+
+		int seleccion = JOptionPane.showOptionDialog(null, "Seleccione como desea conectarse", "Selector de opciones",
+				JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, // null para icono por defecto.
+				new Object[] { "user", "admin" }, // null para YES, NO y CANCEL
+				"user");
+
 		int puertoUsuario = 44444;
 		String nombre = "";
-		
-		if(seleccion == 0) {
+
+		if (seleccion == 0) {
 			puerto = puertoUsuario;
-			
+
 			nombre = JOptionPane.showInputDialog("Introduce tu nombre o nick: ");
 			if (nombre.trim().length() == 0) {
 				System.out.println("El nombre está vacío...");
 				return;
 			}
-		}else {
-			nombre = "admin";
+		} else {
+			nombre = "admin";// Así declaramos el administrador
 			puerto = puertoUsuario;
 		}
-		
+
 		try {
-			s = new Socket("192.168.26.149", puerto);
+			s = new Socket("192.168.26.11", puerto);
 			ClienteChat cliente = new ClienteChat(s, nombre);
 			cliente.setBounds(0, 0, 540, 400);
 			cliente.setVisible(true);
-			new Thread(cliente).start(); //lanzar hilo cliente
+			new Thread(cliente).start(); // lanzar hilo cliente
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null,
-				"IMPOSIBLE CONECTAR CON EL SERVIDOR\n" +
-				e.getMessage(), "<<MENSAJE DE ERROR:1>>",
-				JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "IMPOSIBLE CONECTAR CON EL SERVIDOR\n" + e.getMessage(),
+					"<<MENSAJE DE ERROR:1>>", JOptionPane.ERROR_MESSAGE);
 		}
-	} //main
+	} // main
 
 }//

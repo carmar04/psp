@@ -1,4 +1,3 @@
-
 import java.io.*;
 import java.net.*;
 public class HiloServidorChat extends Thread{
@@ -25,20 +24,76 @@ public class HiloServidorChat extends Thread{
 		String texto = comun.getMensajes();
 		EnviarMensajeaTodos(texto);
 		
+		//boolean conexionActiva = true;
+		
 		while(true) {
 			String cadena = "";
 			try {
 				cadena=fentrada.readUTF();
-				
-				if(cadena.trim().contains("192.168.26")) {//CLIENTE DESCONECTA
-					for(int i = 0; i<comun.IP.size(); i++) {
-						if(cadena.equalsIgnoreCase(comun.IP.get(i))) {
+                //Esto lo hará simplemente cuando entra un cliente
+				if(cadena.contains(" > Entra en el Chat-")) {
+                    //Separamos la cadena en 2, "> Entra en el Chat-" y "Nombre (que hemos escrito al entrarr)"
+					String[] parts = cadena.split("-");
+                    String part1 = parts[1]; 
+                    //Añadimos al ArrayList Nombres, el nombre que entra
+                    comun.Nombres.add(part1);
+					System.out.println("nombre: "+part1);
+                    for(int i = 0; i<comun.IP.size(); i++) {
+                        System.out.println(comun.IP.get(i).toString());//Imprime las direcciones IP que hay en el momento
+                    }
+                }
+                //Si el administrador escribe remove
+				if(cadena.contains("admin") &&cadena.contains("remove")) {
+                    //Separamos "remove-" y "nombre (que haya escrito"
+					String[] parts = cadena.split("-");
+					String part1 = parts[1]; 
+					//Si el nombre que ha escrito coincide con algún nombre que esté en el Array de Nombres
+					for(int i = 0; i<comun.Nombres.size(); i++) {
+						if(comun.Nombres.get(i).equalsIgnoreCase(part1)) {
+                            //Elimina la IP y el nombre de ese cliente de los Arrays
 							comun.IP.remove(i);
+							comun.Nombres.remove(i);
+							try {
+                                //Cierra el socket
+								comun.sockets.get(i).close();
+							}catch(Exception e) {
+								System.out.println("usuario eliminado");
+							}
+							//Elimina el socket del Array de socket
+							comun.sockets.remove(i);
+							comun.setACTUALES(comun.getACTUALES()-1);
+							System.out.println("NÚMERO DE CONEXIONES ACTUALES: "+comun.getACTUALES());
+							//conexionActiva = false;
+							break;
+							
+							
 						}
 					}
-					System.out.println("Carles eres un becario");
+				}
+				//Si la cadena contiene la dirección IP 126.168.26.XXX
+				if(cadena.trim().contains("192.168.26")) {//CLIENTE DESCONECTA
+                    System.out.println(cadena);
+                    //Recorre el Array de IPs
+					for(int i = 0; i<comun.IP.size(); i++) {
+                        //Si la IP escrita es igual a una IP que se encuentre en el Array de IPs
+						if(cadena.equalsIgnoreCase(comun.IP.get(i))) {
+                            System.out.println("se elimina: "+ comun.IP.get(i) + "nombre"+ comun.Nombres.get(i));
+                            //Elimina de los Arrays nombre e IPs
+							comun.IP.remove(i);
+							comun.Nombres.remove(i);
+							if (comun.Nombres.get(i).equalsIgnoreCase("admin")) {
+								comun.setContadorAdministrador(0);
+                            }
+                            //Cierra el socket y lo elimina del Array de sockets
+							comun.sockets.get(i).close();
+							comun.sockets.remove(i);
+						}
+					}
+					
 					comun.setACTUALES(comun.getACTUALES()-1);
 					System.out.println("NÚMERO DE CONEXIONES ACTUALES: "+comun.getACTUALES());
+					
+					for(int i = 0; i<comun.IP.size(); i++) {System.out.println(comun.IP.get(i).toString());}
 					break; //sale del bucle
 					
 				}
@@ -46,17 +101,12 @@ public class HiloServidorChat extends Thread{
 				comun.setMensajes(comun.getMensajes()+cadena+ "\n");
 				EnviarMensajeaTodos(comun.getMensajes());
 			}catch(IOException e){
-				e.printStackTrace();
+				System.out.println("Usuario desconectado");
 				break;
 			}
 		}//fin while
 		
-		try {
-			socket.close();
-		}catch(IOException e){
-			e.printStackTrace();
-			
-		}
+		
 	}// run
 	
 	//ENVIA LOS MENSAJES DEL CHAT A LOS CLIENTES
